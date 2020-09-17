@@ -7,7 +7,6 @@
       src: /var/log/six_pinp.log
       dest: fetchedfiles/six_pinp_par0342."{{ lookup('pipe', 'date') }}".log
       flat: yes
-      
    - name: copy six_mngr.log
      fetch:
       src: /var/log/six_mngr.log
