@@ -12,4 +12,5 @@
      fetch:
       src: /var/log/six_mngr.log
       dest: fetchedfiles/six_mngr_par0342."{{ lookup('pipe', 'date') }}".log
-      flat: yes 
+      flat: yes
+      
