@@ -12,3 +12,8 @@
       src: /var/log/six_mngr.log
       dest: fetchedfiles/six_mngr_par0342."{{ lookup('pipe', 'date') }}".log
       flat: yes
+   - name: copy ipctrl.log
+     fetch:
+      src: /var/log/ipctrl.log
+      dest: fetchedfiles/ipctrl_par0342."{{ lookup('pipe', 'date') }}".log
+      flat: yes
