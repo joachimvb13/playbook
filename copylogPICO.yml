@@ -5,20 +5,20 @@
    - name: copy six_pinp.log
      fetch:
       src: /var/log/six_pinp.log
-      dest: fetchedfiles/six_pinp."ansible_machine_id"."{{ lookup('pipe', 'date') }}".log
+      dest: fetchedfiles/six_pinp.{{ ansible_local['preferences']['general']['site_id'] }}."{{ lookup('pipe', 'date') }}".log
       flat: yes
    - name: copy six_mngr.log
      fetch:
       src: /var/log/six_mngr.log
-      dest: fetchedfiles/six_mngr."ansible_machine_id"."{{ lookup('pipe', 'date') }}".log
+      dest: fetchedfiles/six_mngr.{{ ansible_local['preferences']['general']['site_id'] }}."{{ lookup('pipe', 'date') }}".log
       flat: yes
    - name: copy ipcontrol.log
      fetch:
       src: /var/log/ipcontrol.log
-      dest: fetchedfiles/ipcontrol."ansible_machine_id"."{{ lookup('pipe', 'date') }}".log
+      dest: fetchedfiles/ipcontrol.{{ ansible_local['preferences']['general']['site_id'] }}."{{ lookup('pipe', 'date') }}".log
       flat: yes
    - name: copy timapi.log
      fetch:
       src: /var/log/timapi.log
-      dest: fetchedfiles/timapi."ansible_machine_id"."{{ lookup('pipe', 'date') }}".log
+      dest: fetchedfiles/timapi.{{ ansible_local['preferences']['general']['site_id'] }}."{{ lookup('pipe', 'date') }}".log
       flat: yes
