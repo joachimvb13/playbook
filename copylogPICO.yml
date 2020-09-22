@@ -20,5 +20,5 @@
    - name: copy timapi.log
      fetch:
       src: /var/log/timapi.log
-      dest: fetchedfiles/timapi.{{ ansible_hostname[0:7] }}/timapi.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".log
+      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/timapi.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".log
       flat: yes
