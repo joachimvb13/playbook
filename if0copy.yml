@@ -1,0 +1,8 @@
+---
+ - hosts: all
+
+   tasks:
+   - name: Copy IF0u0 log voor Jonas
+     fetch:
+      src=C:/log/IF0u0.log
+      dest=fetched/voorjonas/{{ ansible_hostname[0:7] }}/IF0u0.{{ ansible_hostname[8:] }}.{{ lookup('pipe', 'date') }}.log flat=yes
