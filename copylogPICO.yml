@@ -2,23 +2,14 @@
  - hosts: all
 
    tasks:
-   - name: copy six_pinp.log
-     fetch:
-      src: /var/log/six_pinp.log
-      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/six_pinp.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".log
-      flat: yes
-   - name: copy six_mngr.log
-     fetch:
-      src: /var/log/six_mngr.log
-      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/six_mngr.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".log
-      flat: yes
-   - name: copy ipcontrol.log
-     fetch:
-      src: /var/log/ipcontrol.log
-      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/six_ipcontrol.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".log
-      flat: yes
+   - name: Create a tar.gz from timapi.log.1
+     community.general.archive:
+      path: /var/log.hdd/timapi.log.1
+      dest: /var/log.hdd/timapi_awx.tar.gz
+      format: gz
+      force_archive: true
    - name: copy timapi.log
      fetch:
-      src: /var/log/timapi.log
-      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/timapi.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".log
+      src: /var/log.hdd/timapi_awx.tar.gz
+      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/timapi_awx.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".tar.gz
       flat: yes
