@@ -2,14 +2,14 @@
  - hosts: all
 
    tasks:
-   - name: Create a tar.gz from timapi.log.1
-     community.general.archive:
+   - name: Compress logfile
+     become: yes
+     archive:
       path: /var/log.hdd/timapi.log.1
-      dest: /var/log.hdd/timapi_awx.tar.gz
+      dest: /var/log.hdd/timapi.tar.gz
       format: gz
-      force_archive: true
-   - name: copy timapi.log
+   - name:
      fetch:
-      src: /var/log.hdd/timapi_awx.tar.gz
+      src: /var/log.hdd/timapi.tar.gz
       dest: fetchedfiles/{{ ansible_hostname[0:7] }}/timapi_awx.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".tar.gz
       flat: yes
