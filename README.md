@@ -1,2 +1,3 @@
-# awx test
- Yml to copy a file from host to server with ansible and give it a date stamp
+# awx testing
+Github gekoppeld aan de awx server. 
+verschillende scriptjes, logging ophalen, backup maken van config en bijhouden...
