@@ -1,0 +1,16 @@
+---
+ - hosts: all
+
+   tasks:
+   - name: backup pico config
+     become: yes
+     archive:
+      path: /opt/opt/var/cfg
+      dest: /opt/opt/var/cfg.tar.gz
+      format: gz
+   - name:
+     fetch:
+      src: /opt/opt/var/cfg.tar.gz
+      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/cfg.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".tar.gz
+      flat: yes
+      
