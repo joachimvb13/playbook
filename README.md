@@ -1,3 +1,3 @@
-# awx testing
+# Awx testing
 Github gekoppeld aan de awx server. 
 verschillende scriptjes, logging ophalen, backup maken van config en bijhouden...
