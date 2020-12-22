@@ -6,10 +6,10 @@
      become: yes
      archive:
       path: /var/log.hdd/timapi.log.1
-      dest: /var/log.hdd/timapi.tar.gz
-      format: gz
+      dest: /var/log.hdd/timapi.zip
+      format: zip
    - name:
      fetch:
-      src: /var/log.hdd/timapi.tar.gz
-      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/timapi_awx.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".tar.gz
+      src: /var/log.hdd/timapi.zip
+      dest: fetchedfiles/{{ ansible_hostname[0:7] }}/timapi_awx.{{ ansible_hostname[8:] }}."{{ lookup('pipe', 'date') }}".zip
       flat: yes
