@@ -1,0 +1,20 @@
+ - hosts: all
+
+   tasks:
+   - name: clear temp dir before cloning
+     file:
+       path: /tmp/opttemp
+       state: absent
+   - name: copy sw pico release from Awxserver to pico
+     copy:
+       src: picofiles/picoswrelease/
+       dest: /tmp/opttemp/
+       #backup: yes
+       #mode: preserve
+#   - name: Unarchive a file that is already on the remote machine
+#     ansible.builtin.unarchive:
+#       src: /tmp/opttemp/*.tgz
+#       dest: /tmp/opttemp/
+#       remote_src: yes
+   - name: unarchive update
+     shell: cd /tmp/opttemp/ && tar -xvzf *.tgz

@@ -1,0 +1,16 @@
+---
+ - hosts: all
+
+   tasks:
+   - name: reboot_pico
+     shell: sleep 5 && shutdown -r now
+     async: 1
+     poll: 0
+   - name: waiting for connection...
+     wait_for_connection:
+       connect_timeout: 30
+       sleep: 5
+       delay: 30
+       timeout: 300
+   - name: optctrl reset printer
+     shell: sleep 90 && /opt/opt/bin/optctrl -l65 -dPRINTER -aRESET

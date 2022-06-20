@@ -1,0 +1,158 @@
+---
+ - hosts: all
+   tasks:
+   - name: Retrieve the hostname
+     command: hostname
+     register: result
+   - set_fact:
+       hostname: "{{ result.stdout }}"
+       cacheable: yes 
+   - name: Get version details
+     shell: touch /opt/opt/version.txt && cat /opt/opt/version.txt
+     register: result1
+   - set_fact:
+       version: "{{ result1.stdout }}"
+       cacheable: yes  
+   - name: Verify sw version
+     debug:
+       msg: System {{ ansible_facts["hostname"] }} with {{ ansible_facts["version"] }} needs to be updated
+     when: ansible_facts["version"] != "V1.1.5"
+   - name: do update
+   #update playbook met git repo als source.
+#Eerst noreboot && idlerest sturen
+#kopieert de files van git naar lokale disk, en maakt reeds backup van bestaande bin folder.
+#sw start automatisch hierna
+#vbj
+     block: 
+       - name: clear temp dir before cloning
+         file:
+           path: /var/opttemp/
+           state: absent
+       - name: Clone micrelec release into /var/opttemp/
+         git:
+           repo: ssh://git@ssh.bitbucket.micrelec.be:7979/yal/opt_deployment.git
+           version: master
+           #depth: 1
+           dest: /var/opttemp/
+           accept_hostkey: yes
+         # ssh-agent doesn't allow key to pass through remote sudo commands.
+         become: no
+       - name: change permissions modified git script.
+         file:
+           path: /var/opttemp/scripts/restore_last_git_modified_time.sh
+           state: file
+           mode: "0755"
+       - name: restore last git modified time
+         shell: cd /var/opttemp/ && /var/opttemp/scripts/restore_last_git_modified_time.sh
+       - name: Creates backup dir
+         file:
+           path: /opt/opt/backup
+           state: directory
+           mode: 755
+       - name: backup the bin dir
+         copy:
+           directory_mode: yes
+           src: /opt/opt/bin
+           dest: /opt/opt/backup/bin_backup.{{ ansible_date_time.iso8601 }}
+           remote_src: yes
+       - name: backup the lib dir
+         copy:
+           directory_mode: yes
+           src: /opt/opt/lib
+           dest: /opt/opt/backup/lib_backup.{{ ansible_date_time.iso8601 }}
+           remote_src: yes
+       - name: noreboot_pico
+         command: /opt/opt/bin/sdefine noreboot=TRUE
+       - name: idlerest_pico
+         command: /opt/opt/bin/sdefine idlerest=TRUE
+       - name: 10 seconds delay
+         pause:
+           seconds: 10
+       - name: get service facts
+         service_facts:
+       - name: check if Micrelec service is stopped
+         debug: 
+           var: ansible_facts.services["micrelec.service"]
+         until: ansible_facts.services["micrelec.service"] ['state'] == "stopped"
+         retries: 20 
+         delay: 10
+         #block: groepeer de verschillende taken
+       - name: install micrelec software pt2
+         block: 
+           - name: remove bin dir
+             file:
+               path: /opt/opt/bin
+               state: absent
+           - name: remove lib dir
+             file: 
+               path: /opt/opt/lib
+               state: absent
+           - name: copy the bin dir
+             copy:
+               directory_mode: yes
+               src: /var/opttemp/bin
+               dest: /opt/opt/
+               mode: '0775'
+               remote_src: yes
+           - name: copy the lib dir
+             copy:
+               directory_mode: yes
+               src: /var/opttemp/lib
+               dest: /opt/opt/
+               mode: '0775'
+               remote_src: yes
+           - name: copy the version file
+             copy:
+               src: /var/opttemp/version.txt
+               dest: /opt/opt/version.txt
+               mode: '0775'
+               remote_src: yes
+           - name: copy the startup script
+             copy:
+               src: /var/opttemp/scripts/startup.sh
+               dest: /opt/opt/scripts/startup.sh
+               mode: '0775'
+               remote_src: yes
+           - name: update opt.ini
+             copy:
+               src: /var/opttemp/var/cfg/opt.ini
+               dest: /opt/opt/var/cfg.opt.ini
+               mode: '0775'
+               remote_src: yes               
+           - name: register bin files
+             find:
+               paths: /opt/opt/bin
+               file_type: file
+             register: filelist
+           - name: change permissions of bin files
+             file:
+               path: "{{ item.path }}"
+               state: file
+               mode: "0755"
+             with_items: "{{ filelist.files }}"
+           
+           - name: register timapi
+             shell: cd /opt/opt/lib && ln libtimapi.so.3.28.0-1769 libtimapi.so.3     
+           - name: ldconfig
+             shell: cd /opt/opt/ && ldconfig
+           - name: Retrieve the hostname
+             command: hostname
+             register: result
+           - set_fact:
+              hostname: "{{ result.stdout }}"
+              cacheable: yes  
+           - name: print hostname
+             debug:
+               msg: System {{ result.stdout }} has been updated!      
+         when: ansible_facts.services["micrelec.service"] ['state'] == "stopped"
+     when: ansible_facts["version"] != "V1.1.5"
+   - name: Remove noreboot_pico
+     command: /opt/opt/bin/sdefine -d noreboot 
+   - name: start the Micrelec service
+     ansible.builtin.service:
+       name: micrelec
+       state: started   
+          
+      
+     
+     
