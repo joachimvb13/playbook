@@ -1,0 +1,8 @@
+---
+ - hosts: all
+   tasks:
+     - name: copy files between hosts
+       synchronize:
+         src: /tmp/opttemp/
+         dest: /var/opttemp/
+       delegate_to: 10.241.215.21
